@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>alvakry still alive, somehow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Theme tokens ── */
+    [data-theme="light"] {
+      --bg:        #f8f7f5;
+      --bg-nav:    rgba(248,247,245,0.88);
+      --fg:        #0d0d0d;
+      --muted:     #888;
+      --border:    rgba(0,0,0,0.09);
+      --accent2:   #c8ff00;
+      --body-text: #444;
+    }
+    [data-theme="dark"] {
+      --bg:        #0e0e0e;
+      --bg-nav:    rgba(14,14,14,0.88);
+      --fg:        #f0ede8;
+      --muted:     #666;
+      --border:    rgba(255,255,255,0.09);
+      --accent2:   #c8ff00;
+      --body-text: #aaa;
+    }
+
+    :root {
+      --max:  720px;
+      --mono: 'Space Mono', monospace;
+      --sans: 'Space Grotesk', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--sans);
+      line-height: 1.65;
+      padding: 0 1.5rem;
+      cursor: none;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ── Custom cursor ── */
+    .cursor {
+      width: 10px; height: 10px;
+      background: var(--fg);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s, background 0.2s;
+      mix-blend-mode: difference;
+    }
+    .cursor.grow { width: 36px; height: 36px; background: var(--accent2); }
+
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.5;
+    }
+
+    /* ── Layout ── */
+    .container { max-width: var(--max); margin: 0 auto; }
+
+    section { padding: 5rem 0; border-bottom: 1px solid var(--border); }
+    section:last-of-type { border-bottom: none; }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem 1.5rem;
+      position: sticky; top: 0;
+      background: var(--bg-nav);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100;
+      margin: 0 -1.5rem;
+      transition: background 0.3s;
+      gap: 1rem;
+    }
+
+    .nav-name {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-decoration: none;
+      color: var(--fg);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .nav-name span { color: var(--muted); font-style: italic; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.4rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-links a::before { content: './'; opacity: 0.4; }
+    .nav-links a:hover { color: var(--fg); }
+
+    /* ── Nav controls (theme + lang) ── */
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-shrink: 0;
+    }
+
+    /* Theme pill */
+    .theme-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.26rem 0.7rem;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .theme-btn:hover { color: var(--fg); border-color: var(--fg); }
+
+    /* Lang pills */
+    .lang-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+    .lang-toggle button {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      padding: 0.26rem 0.65rem;
+      transition: background 0.15s, color 0.15s;
+    }
+    .lang-toggle button.active {
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    /* ── Status badge ── */
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+    }
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e;
+      animation: pulse 2.2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    /* ── Hero ── */
+    .hero { padding: 6rem 0 5rem; border-bottom: 1px solid var(--border); }
+
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .hero-tag::before {
+      content: '';
+      display: inline-block;
+      width: 28px; height: 1px;
+      background: var(--muted);
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 2rem;
+    }
+    .hero h1 em {
+      font-style: normal;
+      position: relative;
+      display: inline-block;
+    }
+    .hero h1 em::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 2px; top: 0;
+      color: var(--fg);
+      clip-path: polygon(0 30%, 100% 30%, 100% 55%, 0 55%);
+      animation: glitch 4s steps(1) infinite;
+      opacity: 0.6;
+    }
+    @keyframes glitch {
+      0%  { transform: translate(0);       opacity: 0; }
+      92% { transform: translate(0);       opacity: 0; }
+      93% { transform: translate(-3px,1px);  opacity: 0.6; }
+      94% { transform: translate(3px,-1px);  opacity: 0.6; }
+      95% { transform: translate(0);       opacity: 0; }
+      97% { transform: translate(2px,2px);   opacity: 0.6; }
+      98% { transform: translate(0);       opacity: 0; }
+    }
+
+    .hero-sub {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 480px;
+      line-height: 1.75;
+    }
+    .hero-sub strong { color: var(--fg); font-weight: 500; }
+
+    /* ── Marquee ── */
+    .marquee-wrap {
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 0;
+      margin: 0 -1.5rem;
+    }
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee 55s linear infinite;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    .marquee-item {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 2.5rem;
+      white-space: nowrap;
+    }
+    .marquee-item span { color: var(--accent2); margin-right: 0.4rem; }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── Section label ── */
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .section-label::after {
+      content: ''; flex: 1;
+      height: 1px; background: var(--border);
+    }
+
+    /* ── Projects ── */
+    .project-list { display: flex; flex-direction: column; }
+
+    .project-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.4rem 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-item::before {
+      content: '';
+      position: absolute;
+      left: -1.5rem; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--accent2);
+      transform: scaleY(0);
+      transition: transform 0.2s ease;
+    }
+    .project-item:hover::before { transform: scaleY(1); }
+    .project-item:last-child { border-bottom: none; }
+    .project-item:hover .project-name { transform: translateX(8px); }
+
+    .project-name {
+      font-size: 0.98rem;
+      font-weight: 500;
+      transition: transform 0.2s ease;
+    }
+    .project-name small {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 400;
+      margin-top: 0.15rem;
+      font-family: var(--mono);
+    }
+    .project-meta {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: right;
+      white-space: nowrap;
+    }
+    .project-meta .tag {
+      display: inline-block;
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.55rem;
+      border-radius: 2px;
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      margin-top: 0.25rem;
+    }
+
+    /* ── About ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+    .about-text p {
+      font-size: 0.97rem;
+      color: var(--body-text);
+      margin-bottom: 1rem;
+      line-height: 1.8;
+    }
+    .about-text p:last-child { margin-bottom: 0; }
+
+    .about-sidebar {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .about-sidebar dl { display: grid; gap: 1rem; }
+    .about-sidebar dt {
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+    .about-sidebar dd { color: var(--fg); font-size: 0.8rem; }
+
+    /* ── Writing ── */
+    .writing-list { display: flex; flex-direction: column; }
+    .writing-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 1.1rem 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: inherit;
+      transition: opacity 0.2s;
+    }
+    .writing-item:last-child { border-bottom: none; }
+    .writing-item:hover { opacity: 0.45; }
+    .writing-title { font-size: 0.93rem; font-weight: 400; }
+    .writing-date {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* ── Contact ── */
+    .contact-intro {
+      font-size: 0.97rem;
+      color: var(--body-text);
+      margin-bottom: 2.5rem;
+      max-width: 480px;
+      line-height: 1.8;
+    }
+    .contact-links { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .contact-links a {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+      color: var(--fg);
+      text-decoration: none;
+      border: 1px solid var(--fg);
+      padding: 0.5rem 1.1rem;
+      border-radius: 2px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .contact-links a:hover { background: var(--fg); color: var(--bg); }
+
+    /* ── Footer ── */
+    footer {
+      padding: 2.5rem 0 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    footer span {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    footer .footer-status { font-style: italic; }
+
+    /* ── Hamburger ── */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 32px; height: 32px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .hamburger span {
+      display: block;
+      width: 22px; height: 1.5px;
+      background: var(--fg);
+      transition: transform 0.25s, opacity 0.25s;
+      transform-origin: center;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* ── Mobile drawer ── */
+    .mobile-drawer {
+      display: none;
+      position: fixed; inset: 0;
+      background: var(--bg);
+      z-index: 150;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 3rem 2rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, background 0.3s;
+    }
+    .mobile-drawer.open { opacity: 1; pointer-events: all; }
+
+    .mobile-drawer nav-links-mobile {
+      list-style: none;
+    }
+    .mobile-drawer ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    .mobile-drawer ul a {
+      font-family: var(--sans);
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--fg);
+      text-decoration: none;
+    }
+
+    /* controls inside drawer */
+    .drawer-controls {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 2.5rem;
+    }
+
+    .drawer-foot {
+      position: absolute;
+      bottom: 3rem; left: 2rem;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    /* ── i18n visibility ── */
+    [data-lang="en"] [lang="id"] { display: none; }
+    [data-lang="id"] [lang="en"] { display: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 860px) and (min-width: 601px) {
+      .nav-links { gap: 1rem; }
+      .nav-links a::before { display: none; }
+      .about-grid { grid-template-columns: 3fr 2fr; gap: 2rem; }
+    }
+
+    @media (max-width: 600px) {
+      body  { cursor: auto; }
+      .cursor { display: none; }
+      html  { font-size: clamp(14px, 4vw, 16px); }
+
+      .nav-links   { display: none; }
+      .nav-controls { display: none; }
+      .hamburger   { display: flex; }
+      .mobile-drawer { display: flex; }
+
+      section { padding: 3rem 0; }
+      .hero   { padding: 3rem 0 2.5rem; }
+
+      .hero-sub { font-size: 0.95rem; }
+
+      .project-item {
+        grid-template-columns: 1fr;
+        gap: 0.35rem;
+        padding: 1.2rem 0;
+      }
+      .project-meta {
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .project-meta .tag { margin-top: 0; }
+      .project-name { font-size: 1rem; }
+      .project-name small { font-size: 0.72rem; }
+
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .about-sidebar dl {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+      }
+
+      .writing-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.12rem;
+        padding: 1rem 0;
+      }
+      .writing-title { font-size: 0.9rem; }
+
+      .contact-links { flex-direction: column; }
+      .contact-links a {
+        text-align: center;
+        padding: 0.9rem 1.1rem;
+        width: 100%;
+      }
+
+      .section-label { margin-bottom: 1.75rem; }
+      footer { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+
+      .marquee-item { font-size: 0.68rem; padding: 0 1.6rem; }
+      .marquee-wrap { padding: 0.6rem 0; }
+    }
+
+    @media (max-width: 380px) {
+      body { padding: 0 1rem; }
+      nav  { margin: 0 -1rem; padding-left: 1rem; padding-right: 1rem; }
+      .marquee-wrap { margin: 0 -1rem; }
+      .about-sidebar dl { grid-template-columns: 1fr; }
+      .mobile-drawer ul a { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<div class="container">
+  <nav>
+    <a class="nav-name" href="#">alvakry<span>.exe</span></a>
+
+    <ul class="nav-links">
+      <li><a href="#work"     data-i18n="nav.work"></a></li>
+      <li><a href="#about"    data-i18n="nav.about"></a></li>
+      <li><a href="#thoughts" data-i18n="nav.thoughts"></a></li>
+      <li><a href="#contact"  data-i18n="nav.contact"></a></li>
+    </ul>
+
+    <div class="nav-controls">
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">
+        <span id="themeIcon">☾</span>
+        <span id="themeLabel">dark</span>
+      </button>
+      <div class="lang-toggle">
+        <button id="btnEN" class="active" onclick="setLang('en')">EN</button>
+        <button id="btnID" onclick="setLang('id')">ID</button>
+      </div>
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</div>
+
+<!-- Mobile drawer -->
+<div class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+  <ul>
+    <li><a href="#work"     class="drawer-link" data-i18n="nav.work"></a></li>
+    <li><a href="#about"    class="drawer-link" data-i18n="nav.about"></a></li>
+    <li><a href="#thoughts" class="drawer-link" data-i18n="nav.thoughts"></a></li>
+    <li><a href="#contact"  class="drawer-link" data-i18n="nav.contact"></a></li>
+  </ul>
+  <div class="drawer-controls">
+    <button class="theme-btn" id="themeBtnMobile" aria-label="Toggle theme">
+      <span id="themeIconM">☾</span>
+      <span id="themeLabelM">dark</span>
+    </button>
+    <div class="lang-toggle">
+      <button id="btnENM" class="active" onclick="setLang('en')">EN</button>
+      <button id="btnIDM" onclick="setLang('id')">ID</button>
+    </div>
+  </div>
+  <p class="drawer-foot">alvakry.exe — v2.0</p>
+</div>
+
+<!-- Marquee -->
+<div class="marquee-wrap">
+
+  <!-- Indonesian track -->
+  <div class="marquee-track" id="marqueeID">
+    <span class="marquee-item"><span>✦</span> korupsi bukan budaya, tapi kayak tradisi</span>
+    <span class="marquee-item"><span>✦</span> DPR tidur, rakyat bayar gajinya</span>
+    <span class="marquee-item"><span>✦</span> infrastruktur dibangun, hutang rakyat yang nanggung</span>
+    <span class="marquee-item"><span>✦</span> demokrasi: satu suara, seribu janji palsu</span>
+    <span class="marquee-item"><span>✦</span> pejabat naik jabatan, harga beras naik duluan</span>
+    <span class="marquee-item"><span>✦</span> subsidi dipotong, anggaran studi banding aman</span>
+    <span class="marquee-item"><span>✦</span> kritik pemerintah? siap-siap kena UU ITE</span>
+    <span class="marquee-item"><span>✦</span> pajak naik, pelayanan publik tetap sama buruknya</span>
+    <span class="marquee-item"><span>✦</span> korupsi bukan budaya, tapi kayak tradisi</span>
+    <span class="marquee-item"><span>✦</span> DPR tidur, rakyat bayar gajinya</span>
+    <span class="marquee-item"><span>✦</span> infrastruktur dibangun, hutang rakyat yang nanggung</span>
+    <span class="marquee-item"><span>✦</span> demokrasi: satu suara, seribu janji palsu</span>
+    <span class="marquee-item"><span>✦</span> pejabat naik jabatan, harga beras naik duluan</span>
+    <span class="marquee-item"><span>✦</span> subsidi dipotong, anggaran studi banding aman</span>
+    <span class="marquee-item"><span>✦</span> kritik pemerintah? siap-siap kena UU ITE</span>
+    <span class="marquee-item"><span>✦</span> pajak naik, pelayanan publik tetap sama buruknya</span>
+  </div>
+
+  <!-- English track (hidden by default) -->
+  <div class="marquee-track" id="marqueeEN" style="display:none">
+    <span class="marquee-item"><span>✦</span> corruption isn't culture, it just acts like one</span>
+    <span class="marquee-item"><span>✦</span> parliament sleeps, citizens pay the salary</span>
+    <span class="marquee-item"><span>✦</span> infrastructure built, public debt foots the bill</span>
+    <span class="marquee-item"><span>✦</span> democracy: one vote, a thousand empty promises</span>
+    <span class="marquee-item"><span>✦</span> officials get promoted, rice prices get there first</span>
+    <span class="marquee-item"><span>✦</span> subsidies cut, overseas study trips fully funded</span>
+    <span class="marquee-item"><span>✦</span> criticise the government? enjoy your ITE lawsuit</span>
+    <span class="marquee-item"><span>✦</span> taxes up, public services exactly as bad as before</span>
+    <span class="marquee-item"><span>✦</span> corruption isn't culture, it just acts like one</span>
+    <span class="marquee-item"><span>✦</span> parliament sleeps, citizens pay the salary</span>
+    <span class="marquee-item"><span>✦</span> infrastructure built, public debt foots the bill</span>
+    <span class="marquee-item"><span>✦</span> democracy: one vote, a thousand empty promises</span>
+    <span class="marquee-item"><span>✦</span> officials get promoted, rice prices get there first</span>
+    <span class="marquee-item"><span>✦</span> subsidies cut, overseas study trips fully funded</span>
+    <span class="marquee-item"><span>✦</span> criticise the government? enjoy your ITE lawsuit</span>
+    <span class="marquee-item"><span>✦</span> taxes up, public services exactly as bad as before</span>
+  </div>
+
+</div>
+
+<div class="container">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="status">
+      <span class="status-dot"></span>
+      <span lang="en">online — probably procrastinating</span>
+      <span lang="id">online — kemungkinan lagi nunda-nunda kerjaan</span>
+    </div>
+    <div class="hero-tag">v2.0 — human interface</div>
+    <h1>
+      <span lang="en">I build things<br>the internet<br><em data-text="deserves.">deserves.</em></span>
+      <span lang="id">Saya bikin hal-hal<br>yang internet<br><em data-text="layak dapat.">layak dapat.</em></span>
+    </h1>
+    <p class="hero-sub">
+      <span lang="en">Designer and developer. I make <strong>interfaces, tools, and bad jokes</strong> — in that order of quality. Powered by caffeine and mild existential dread. The government didn't fund this. Shockingly.</span>
+      <span lang="id">Desainer sekaligus developer. Saya bikin <strong>antarmuka, tools, dan lelucon garing</strong> — urutan itu sesuai kualitasnya. Bahan bakar: kafein dan rasa eksistensial yang samar. Tidak disponsori pemerintah. Mengejutkan sekali.</span>
+    </p>
+  </section>
+
+  <!-- Work -->
+  <section id="work">
+    <p class="section-label">
+      <span lang="en">Selected Work</span>
+      <span lang="id">Karya Pilihan</span>
+    </p>
+    <div class="project-list">
+
+      <a class="project-item" href="#">
+        <div class="project-name">
+          Orbital Dashboard
+          <small>
+            <span lang="en">SaaS analytics — data should look as good as the excuses made from it</span>
+            <span lang="id">Analitik SaaS — data harus sebagus alasan yang dibuat darinya</span>
+          </small>
+        </div>
+        <div class="project-meta">
+          <span lang="en">Design &amp; Dev</span>
+          <span lang="id">Desain &amp; Dev</span><br>
+          <span class="tag">2026</span>
+        </div>
+      </a>
+
+      <a class="project-item" href="#">
+        <div class="project-name">
+          Voidmarket
+          <small>
+            <span lang="en">E-commerce redesign — checkout 3× faster, unlike public services</span>
+            <span lang="id">Redesain e-commerce — checkout 3× lebih cepat, tidak seperti pelayanan publik</span>
+          </small>
+        </div>
+        <div class="project-meta">UI / UX<br><span class="tag">2025</span></div>
+      </a>
+
+      <a class="project-item" href="#">
+        <div class="project-name">
+          Subtext CLI
+          <small>
+            <span lang="en">Open-source tool — more transparent than a budget report</span>
+            <span lang="id">Tool open-source — lebih transparan dari laporan anggaran negara</span>
+          </small>
+        </div>
+        <div class="project-meta">Engineering<br><span class="tag">2025</span></div>
+      </a>
+
+      <a class="project-item" href="#">
+        <div class="project-name">
+          Ledge — Mobile Banking UI
+          <small>
+            <span lang="en">Banking app for humans, not bureaucrats</span>
+            <span lang="id">Aplikasi perbankan untuk manusia, bukan birokrat</span>
+          </small>
+        </div>
+        <div class="project-meta">
+          <span lang="en">Product Design</span>
+          <span lang="id">Desain Produk</span><br>
+          <span class="tag">2024</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <p class="section-label">
+      <span lang="en">About</span>
+      <span lang="id">Tentang</span>
+    </p>
+    <div class="about-grid">
+      <div class="about-text">
+        <p lang="en">I'm a designer-developer hybrid based in [Pekanbaru] — a place whose infrastructure I've accepted with the grace of someone who has no other choice.</p>
+        <p lang="en">I spend my time building interfaces that actually work, writing code that doesn't make future-me cry, and occasionally questioning decisions made by people with titles and no accountability.</p>
+        <p lang="en">I believe good design is quiet. Bad governance is loud. I prefer the former.</p>
+        <p lang="id">Saya adalah hybrid desainer-developer yang tinggal di [Pekanbaru] — kota yang infrastrukturnya sudah saya terima dengan keikhlasan orang yang tidak punya pilihan lain.</p>
+        <p lang="id">Waktu saya habis untuk membangun antarmuka yang benar-benar bekerja, menulis kode yang tidak membuat saya menyesal di kemudian hari, dan sesekali mempertanyakan keputusan orang-orang berjabatan yang bebas dari akuntabilitas.</p>
+        <p lang="id">Saya percaya desain yang baik itu senyap. Pemerintahan yang buruk itu berisik. Saya lebih suka yang pertama.</p>
+      </div>
+      <div class="about-sidebar">
+        <dl>
+          <div>
+            <dt lang="en">Currently</dt>
+            <dt lang="id">Sekarang</dt>
+            <dd lang="en">Freelance · Open to roles</dd>
+            <dd lang="id">Freelance · Terbuka untuk peran baru</dd>
+          </div>
+          <div>
+            <dt>Stack</dt>
+            <dd>TypeScript · React · Figma · regret</dd>
+          </div>
+          <div>
+            <dt lang="en">Interests</dt>
+            <dt lang="id">Minat</dt>
+            <dd lang="en">Generative art · type design · dark humor</dd>
+            <dd lang="id">Seni generatif · tipografi · humor gelap</dd>
+          </div>
+          <div>
+            <dt lang="en">Tax bracket</dt>
+            <dt lang="id">Bracket pajak</dt>
+            <dd lang="en">Painfully real</dd>
+            <dd lang="id">Menyakitkan nyatanya</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- Thoughts -->
+  <section id="thoughts">
+    <p class="section-label">
+      <span lang="en">Thoughts</span>
+      <span lang="id">Pikiran</span>
+    </p>
+    <div class="writing-list">
+
+      <a class="writing-item" href="#">
+        <span class="writing-title">
+          <span lang="en">Why I redesigned my entire setup at 2am (again)</span>
+          <span lang="id">Kenapa saya redesain seluruh setup di jam 2 pagi (lagi)</span>
+        </span>
+        <span class="writing-date">Oct 2026</span>
+      </a>
+
+      <a class="writing-item" href="#">
+        <span class="writing-title">
+          <span lang="en">On building things no one asked for but everyone needed</span>
+          <span lang="id">Tentang membangun hal yang tidak diminta tapi semua orang butuhkan</span>
+        </span>
+        <span class="writing-date">Aug 2026</span>
+      </a>
+
+      <a class="writing-item" href="#">
+        <span class="writing-title">
+          <span lang="en">Budget allocation, explained with a Figma file</span>
+          <span lang="id">Alokasi anggaran negara, dijelaskan lewat file Figma</span>
+        </span>
+        <span class="writing-date">May 2026</span>
+      </a>
+
+      <a class="writing-item" href="#">
+        <span class="writing-title">
+          <span lang="en">The gap between "launched" and "done" is where I live</span>
+          <span lang="id">Jarak antara "sudah rilis" dan "selesai" adalah tempat tinggal saya</span>
+        </span>
+        <span class="writing-date">Jan 2026</span>
+      </a>
+
+      <a class="writing-item" href="#">
+        <span class="writing-title">
+          <span lang="en">Serif vs. sans-serif: a war more civil than parliament</span>
+          <span lang="id">Serif vs. sans-serif: perang yang lebih beradab dari parlemen</span>
+        </span>
+        <span class="writing-date">Sep 2025</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <p class="section-label">
+      <span lang="en">Contact</span>
+      <span lang="id">Kontak</span>
+    </p>
+    <p class="contact-intro">
+      <span lang="en">Open to freelance, full-time, and anything that doesn't require explaining myself to a committee. Reply time: faster than your municipality's permit office.</span>
+      <span lang="id">Terbuka untuk freelance, full-time, dan apapun yang tidak mengharuskan saya menjelaskan diri ke sebuah komite. Waktu balas: lebih cepat dari kantor perizinan daerahmu.</span>
+    </p>
+    <div class="contact-links">
+      <a href="mailto:nervedx@gmail.com">Email</a>
+      <a href="https://instagram.com/alvakry" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://github.com/alvakry" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://youtube.com/@alvakryy" target="_blank" rel="noopener">YouTube</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <span>
+      <span lang="en">© 2026 alvakry — all rights reserved, none enforced</span>
+      <span lang="id">© 2026 alvakry — semua hak dilindungi, tidak ada yang menegakkan</span>
+    </span>
+    <span class="footer-status">
+      <span lang="en">handcrafted · no subsidies received</span>
+      <span lang="id">dibuat tangan · tidak menerima subsidi</span>
+    </span>
+  </footer>
+
+</div>
+
+<script>
+  /* ── i18n ── */
+  const strings = {
+    en: { 'nav.work':'work', 'nav.about':'about', 'nav.thoughts':'thoughts', 'nav.contact':'contact' },
+    id: { 'nav.work':'karya', 'nav.about':'tentang', 'nav.thoughts':'pikiran', 'nav.contact':'kontak' }
+  };
+
+  function setLang(lang) {
+    document.documentElement.setAttribute('data-lang', lang);
+    document.documentElement.setAttribute('lang', lang);
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      el.textContent = strings[lang][el.dataset.i18n] || '';
+    });
+    ['btnEN','btnENM'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('active', lang === 'en');
+    });
+    ['btnID','btnIDM'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('active', lang === 'id');
+    });
+    // swap marquee tracks
+    document.getElementById('marqueeEN').style.display = lang === 'en' ? 'flex' : 'none';
+    document.getElementById('marqueeID').style.display = lang === 'id' ? 'flex' : 'none';
+    localStorage.setItem('lang', lang);
+  }
+
+  /* ── Theme ── */
+  function applyTheme(theme) {
+    const isDark = theme === 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    const icon  = isDark ? '☀︎' : '☾';
+    const label = isDark ? 'light' : 'dark';
+    document.getElementById('themeIcon').textContent  = icon;
+    document.getElementById('themeLabel').textContent = label;
+    document.getElementById('themeIconM').textContent  = icon;
+    document.getElementById('themeLabelM').textContent = label;
+    localStorage.setItem('theme', theme);
+  }
+
+  function toggleTheme() {
+    const cur = document.documentElement.getAttribute('data-theme');
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
+  }
+
+  document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+  document.getElementById('themeBtnMobile').addEventListener('click', toggleTheme);
+
+  /* ── Init from localStorage or system preference ── */
+  (function init() {
+    const savedTheme = localStorage.getItem('theme') ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const savedLang  = localStorage.getItem('lang') || 'en';
+    applyTheme(savedTheme);
+    setLang(savedLang);
+  })();
+
+  /* ── Custom cursor (pointer devices only) ── */
+  const cursor = document.getElementById('cursor');
+  if (!window.matchMedia('(hover: none)').matches) {
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('grow'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('grow'));
+    });
+  }
+
+  /* ── Hamburger ── */
+  const hamburger = document.getElementById('hamburger');
+  const drawer    = document.getElementById('mobileDrawer');
+
+  function toggleMenu(open) {
+    hamburger.classList.toggle('open', open);
+    drawer.classList.toggle('open', open);
+    hamburger.setAttribute('aria-expanded', String(open));
+    drawer.setAttribute('aria-hidden', String(!open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  hamburger.addEventListener('click', () => toggleMenu(!hamburger.classList.contains('open')));
+  document.querySelectorAll('.drawer-link').forEach(l => l.addEventListener('click', () => toggleMenu(false)));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') toggleMenu(false); });
+
+  /* ── Scroll fade-in ── */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity   = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('section').forEach(el => {
+    el.style.opacity    = '0';
+    el.style.transform  = 'translateY(18px)';
+    el.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
+    io.observe(el);
+  });
+</script>
+</body>
+</html>
