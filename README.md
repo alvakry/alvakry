@@ -1,9 +1,3 @@
-```
-╔═══════════════════════════════════════════════════╗
-║   alvakry.exe — v2.0 — still loading...           ║
-╚═══════════════════════════════════════════════════╝
-```
-
 # hey, i'm alvakry `</>` 
 
 designer × developer × person who questions things that shouldn't need questioning.
